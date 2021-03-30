@@ -3,17 +3,24 @@ const Card = require('../models/card');
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch(() => res
-      .status(404)
-      .send({ message: 'Ошибочка на сервере при получение всех карточек' }));
+    .catch(() => res.status(500).send({ message: 'Ошибочка на сервере при получение всех карточек' }));
 };
 
-const createCard = (req, res, next) => {
+//
+// Мне кажется валидация в 14 спринте :)
+// но все равно - спасибо за урок валидации
+//
+const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
-    .catch(next);
+    .catch((err) => {
+      if (err.message === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      return res.status(500).send({ message: '500 - Внутренняя ошибка сервера' });
+    });
 };
 
 const deleteCard = (req, res, next) => {

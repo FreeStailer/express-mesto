@@ -1,11 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const router = require('./src/routes/index.js');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-const bodyParser = require('body-parser');
-
-app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   req.user = {
@@ -14,12 +12,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// маршруты
-const cards = require('./src/routes/cards.js');
-const users = require('./src/routes/users.js');
-
-app.use('/', users);
-app.use('/', cards);
+app.use(router);
 
 // вебинар: "типа для подключения сайта пригодится"
 // app.use(express.static(path.join(__dirname, 'public')));
