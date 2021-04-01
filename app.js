@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./src/routes/index.js');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
+const router = require('./src/routes/index.js');
+
 app.use((req, res, next) => {
   req.user = {
     _id: '605de414ae7d765e77dd857a',

@@ -10,7 +10,7 @@ const updateUserInfo = (req, res) => {
     .catch((err) => handleUserError(err, res));
 };
 
-const createUser = (req, res, next) => {
+const createUser = (req, res) => {
   const data = { ...req.body };
   User.create(data).orFail()
     .then((user) => res.status(200).send(user))
@@ -40,5 +40,5 @@ module.exports = {
   getUsers,
   getUser,
   updateUserInfo,
-  updateUserAvatar
+  updateUserAvatar,
 };

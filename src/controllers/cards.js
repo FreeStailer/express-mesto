@@ -31,7 +31,7 @@ const likeCard = (req, res) => {
     .catch((err) => handleCardError(err, res));
 };
 
-const dislikeCard = (req, res, next) => {
+const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
