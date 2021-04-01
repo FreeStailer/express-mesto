@@ -1,49 +1,34 @@
 const Card = require('../models/card');
+const { handleCardError } = require('../utils/errors');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch(() => res.status(500).send({ message: 'Ошибочка на сервере при получение всех карточек' }));
+    .catch((err) => handleCardError(err, res));
 };
 
-//
-// Мне кажется валидация в 14 спринте :)
-// но все равно - спасибо за урок валидации
-//
 const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.message === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
-      }
-      return res.status(500).send({ message: '500 - Внутренняя ошибка сервера' });
-    });
+    .catch((err) => handleCardError(err, res));
 };
 
-const deleteCard = (req, res, next) => {
+const deleteCard = (req, res) => {
   Card.findByIdAndDelete({ owner: req.user._id, _id: req.params.cardId })
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'Карточка НЕ удалена' });
-      }
-      return res.status(200).send({ message: 'Карточка удалена' });
-    })
-    .catch(next);
+    .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+    .catch((err) => handleCardError(err, res));
 };
 
-const likeCard = (req, res, next) => {
+const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      res.status(200).send(card);
-    })
-    .catch(next);
+    .then((card) => res.status(200).send(card))
+    .catch((err) => handleCardError(err, res));
 };
 
 const dislikeCard = (req, res, next) => {
@@ -55,7 +40,7 @@ const dislikeCard = (req, res, next) => {
     .then(() => {
       res.status(200).send({ message: 'Дизлайк!' });
     })
-    .catch(next);
+    .catch((err) => handleCardError(err, res));
 };
 
 module.exports = {
@@ -65,15 +50,3 @@ module.exports = {
   deleteCard,
   dislikeCard,
 };
-
-// module.exports.likeCard = (req, res) => Card.findByIdAndUpdate(
-//   req.params.cardId,
-//   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-//   { new: true },
-// )
-
-// module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
-//   req.params.cardId,
-//   { $pull: { likes: req.user._id } }, // убрать _id из массива
-//   { new: true },
-// )
