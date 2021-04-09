@@ -1,5 +1,7 @@
 const Card = require('../models/card');
 const { handleCardError } = require('../utils/errors');
+const NotFoundError = require('../utils/notfound-error.js');
+const ForbiddenError = require('../utils/forbidden-error.js');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -16,17 +18,25 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndDelete({ owner: req.user._id, _id: req.params.cardId })
-    .then(() => res.status(200).send({ message: 'Карточка удалена' }))
-    .catch((err) => handleCardError(err, res));
-};
+  Card.findById(req.params.cardId).orFail(new NotFoundError('Карточка не найдена'))
+  .then((card) => {
+    if (card.owner.toString() === req.user._id.toString()) {
+      Card.findByIdAndDelete(card._id)
+      .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+      .catch((err) => handleCardError(err, res));
+    } else {
+      throw new ForbiddenError('Недостаточно прав')
+    }
+  })
+  .catch((err) => handleCardError(err, res));
+}
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  )
+  ).orFail(new NotFoundError('Карточка не найдена'))
     .then((card) => res.status(200).send(card))
     .catch((err) => handleCardError(err, res));
 };
@@ -36,7 +46,7 @@ const dislikeCard = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  )
+  ).orFail(new NotFoundError('Карточка не найдена'))
     .then(() => {
       res.status(200).send({ message: 'Дизлайк!' });
     })
