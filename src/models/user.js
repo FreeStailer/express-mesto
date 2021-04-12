@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const UnauthorizedError = require('../utils/unauthorized-error');
 
-
 const userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -24,7 +23,7 @@ const userSchema = mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(v) {
-        const regex = /^(https?:\/\/)?([\da-z\\.-]+)\.([a-z\\.]{2,6})([\\/\w \\.-]*)*\/?$/gi; //позже проверить возможно неккоректно
+        const regex = /^(https?:\/\/)?([\da-z\\.-]+)\.([a-z\\.]{2,6})([\\/\w \\.-]*)*\/?$/gi; // позже проверить возможно неккоректно
         return regex.test(v);
       },
       message: 'Переданы некорректные данные',
@@ -50,6 +49,7 @@ const userSchema = mongoose.Schema({
   },
 });
 
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {

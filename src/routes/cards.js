@@ -13,27 +13,27 @@ router.get('/cards', getCards);
 
 router.post('/cards', celebrate({
   body: Joi.object().keys({
-    name: Joy.string().required().min(2).max(30),
-    link: Joy.string().required().uri(),
-  })
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().uri(),
+  }),
 }), createCard);
 
 router.put('/cards/:cardId/likes', celebrate({
-  params: Joy.object().keys({
-    cardId: Joy.string().required().alphanum().length(24)
-  })
+  params: Joi.object().keys({
+    cardId: Joi.string().required().alphanum().length(24),
+  }),
 }), likeCard);
 
 router.delete('/cards/:cardId', celebrate({
-  params: Joy.object().keys({
-    cardId: Joy.string().required().alphanum().length(24)
-  })
+  params: Joi.object().keys({
+    cardId: Joi.string().required().alphanum().length(24),
+  }),
 }), deleteCard);
 
 router.delete('/cards/:cardId/likes', celebrate({
-  params: Joy.object().keys({
-    cardId: Joy.string().required().alphanum().length(24)
-  })
+  params: Joi.object().keys({
+    cardId: Joi.string().required().alphanum().length(24),
+  }),
 }), dislikeCard);
 
 module.exports = router;

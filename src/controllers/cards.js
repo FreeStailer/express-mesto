@@ -19,17 +19,17 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findById(req.params.cardId).orFail(new NotFoundError('Карточка не найдена'))
-  .then((card) => {
-    if (card.owner.toString() === req.user._id.toString()) {
-      Card.findByIdAndDelete(card._id)
-      .then(() => res.status(200).send({ message: 'Карточка удалена' }))
-      .catch((err) => handleCardError(err, res));
-    } else {
-      throw new ForbiddenError('Недостаточно прав')
-    }
-  })
-  .catch((err) => handleCardError(err, res));
-}
+    .then((card) => {
+      if (card.owner.toString() === req.user._id.toString()) {
+        Card.findByIdAndDelete(card._id)
+          .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+          .catch((err) => handleCardError(err, res));
+      } else {
+        throw new ForbiddenError('Недостаточно прав');
+      }
+    })
+    .catch((err) => handleCardError(err, res));
+};
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
