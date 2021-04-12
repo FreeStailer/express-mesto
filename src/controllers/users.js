@@ -6,6 +6,8 @@ const NotFoundError = require('../utils/notfound-error.js');
 const UnauthorizedError = require('../utils/unauthorized-error.js');
 const BadRequestError = require('../utils/badrequest-error.js');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email,
@@ -69,20 +71,22 @@ const updateUserAvatar = (req, res) => {
     .catch((err) => handleUserError(err, res));
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      let token;
-      try {
-        token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      } catch (err) {
-        throw new UnauthorizedError('Необходима авторизация');
-      }
-      res.send({ token });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret',
+        { expiresIn: '7d' },
+      );
+      return res.send({ token });
     })
-    .catch((err) => handleUserError(err, res));
+    .catch(() => {
+      throw new UnauthorizedError('Авторизация не пройдена');
+    })
+    .catch(next);
 };
 
 module.exports = {

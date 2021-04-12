@@ -11,11 +11,12 @@ module.exports = (req, res, next) => {
   }
 
   const token = authorization.replace('Bearer ', '');
+
   let payload;
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret');
   } catch (err) {
-    return res.status(401).send({ message: '401.Необходима авторизация' });
+    return res.status(401).send({ message: '401. Необходима авторизация' });
   }
 
   req.user = payload;
