@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { handleUserError } = require('../utils/errors');
 const NotFoundError = require('../utils/notfound-error.js');
-const UnauthorizedError = require('../utils/unauthorized-error.js');
-const BadRequestError = require('../utils/badrequest-error.js');
+const ConflictError = require('../utils/conflict-error.js');
+const BadRequestError = require('../utils/badrequest-error.js')
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -24,13 +24,23 @@ const createUser = (req, res, next) => {
         avatar: user.avatar,
       };
       res.send(userData);
-    }).catch((err) => {
-      if (err.code === 11000) {
-        throw new BadRequestError('Пользователь с таким email уже зарегистрирован');
-      } else {
-        next(err);
+    }))
+    .then((user) => res.status(200).send({ mail: user.email }))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        throw new BadRequestError(`Данные не прошли валидацию${err}`);
       }
-    })).catch((err) => handleUserError(err, res));
+      if (err.name === 'MongoError' || err.code === '11000') {
+        throw new ConflictError('Такой email уже зарегистрирован');
+      }
+    })
+    .catch(() => {
+      res.status(409).send({ message: 'Такой email уже зарегистрирован'});
+    })
+    .catch(() => {
+      res.status(400).send({ message: '`Данные не прошли валидацию'});
+    })
+    .catch(next);
 };
 
 const getUserInfo = (req, res) => {
@@ -84,7 +94,7 @@ const login = (req, res, next) => {
       return res.send({ token });
     })
     .catch(() => {
-      throw new UnauthorizedError('Авторизация не пройдена');
+      res.status(401).send({ message: 'Авторизация не пройдена'});
     })
     .catch(next);
 };

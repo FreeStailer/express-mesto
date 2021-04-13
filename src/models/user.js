@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const UnauthorizedError = require('../utils/unauthorized-error');
+const validator = require('validator');
 
 const userSchema = mongoose.Schema({
   name: {
@@ -23,10 +24,9 @@ const userSchema = mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(v) {
-        const regex = /^(https?:\/\/)?([\da-z\\.-]+)\.([a-z\\.]{2,6})([\\/\w \\.-]*)*\/?$/gi; // позже проверить возможно неккоректно
-        return regex.test(v);
+        return /^https?:\/\/(www\.)?([a-zA-Z0-9\-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-\._~:\/\?#\[\]@!\$&’\(\)\*\+,;=]+)/.test(v);
       },
-      message: 'Переданы некорректные данные',
+      message: (props) => `Ошибка в ссылке ${props.value}`,
     },
   },
   email: {
@@ -35,10 +35,9 @@ const userSchema = mongoose.Schema({
     unique: true,
     validate: {
       validator(v) {
-        const regex = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/gi;
-        return regex.test(v);
+        return validator.isEmail(v);
       },
-      message: 'Переданы некорректные данные',
+      message: 'Косяк. Введите емейл',
     },
   },
   password: {

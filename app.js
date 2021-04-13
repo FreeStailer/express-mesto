@@ -34,15 +34,11 @@ app.use('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?([a-zA-Z0-9-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-_~:/#[\]@!&â€™,;=]+)/),
   }),
 }), createUser);
 
 app.use(errors());
-
-// app.use((req, res, next) => {
-//   next(new NotFoundError('Чета ищу, а не знаю где ищу и что'));
-// });
 
 app.listen(PORT, () => {
   console.log(`Slushaem radio na volne ${PORT}`);

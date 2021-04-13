@@ -13,7 +13,7 @@ const cardSchema = mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = /^(https?:\/\/)?([\da-z\\.-]+)\.([a-z\\.]{2,6})([\\/\w \\.-]*)*\/?$/gi;
+        const regex = /^https?:\/\/(www\.)?([a-zA-Z0-9\-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-\._~:\/\?#\[\]@!\$&’\(\)\*\+,;=]+)/gi;
         return regex.test(v);
       },
       message: 'Переданы некорректные данные',
