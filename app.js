@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 const router = require('./src/routes/index.js');
 
-app.use(router);
+
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -38,7 +38,21 @@ app.use('/signup', celebrate({
   }),
 }), createUser);
 
+app.use(router);
+
 app.use(errors());
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+      ? `На сервере произошла ошибка${err}`
+      : message,
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`Slushaem radio na volne ${PORT}`);

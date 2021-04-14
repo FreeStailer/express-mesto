@@ -28,17 +28,11 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(200).send({ mail: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError(`Данные не прошли валидацию${err}`);
+        throw new BadRequestError(`Данные не прошли валидацию`);
       }
       if (err.name === 'MongoError' || err.code === '11000') {
         throw new ConflictError('Такой email уже зарегистрирован');
       }
-    })
-    .catch(() => {
-      res.status(409).send({ message: 'Такой email уже зарегистрирован'});
-    })
-    .catch(() => {
-      res.status(400).send({ message: '`Данные не прошли валидацию'});
     })
     .catch(next);
 };
