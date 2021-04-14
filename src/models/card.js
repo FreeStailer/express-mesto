@@ -13,6 +13,7 @@ const cardSchema = mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
+        // eslint-disable-next-line no-useless-escape
         const regex = /^https?:\/\/(www\.)?([a-zA-Z0-9\-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-\._~:\/\?#\[\]@!\$&’\(\)\*\+,;=]+)/gi;
         return regex.test(v);
       },

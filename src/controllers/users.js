@@ -4,7 +4,7 @@ const User = require('../models/user');
 const { handleUserError } = require('../utils/errors');
 const NotFoundError = require('../utils/notfound-error.js');
 const ConflictError = require('../utils/conflict-error.js');
-const BadRequestError = require('../utils/badrequest-error.js')
+const BadRequestError = require('../utils/badrequest-error.js');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -28,7 +28,7 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(200).send({ mail: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError(`Данные не прошли валидацию`);
+        throw new BadRequestError('Данные не прошли валидацию');
       }
       if (err.name === 'MongoError' || err.code === '11000') {
         throw new ConflictError('Такой email уже зарегистрирован');
@@ -88,7 +88,7 @@ const login = (req, res, next) => {
       return res.send({ token });
     })
     .catch(() => {
-      res.status(401).send({ message: 'Авторизация не пройдена'});
+      res.status(401).send({ message: 'Авторизация не пройдена' });
     })
     .catch(next);
 };
