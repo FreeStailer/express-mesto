@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
 const { login, createUser } = require('./src/controllers/users.js');
+const { requestLogger, errorLogger } = require('./src/middlewares/logger.js');
 
 app.use(bodyParser.json());
 
@@ -18,6 +19,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
+
+app.use(requestLogger); // до роутов
 
 app.use('/signin', celebrate({
   body: Joi.object().keys({
@@ -38,17 +41,18 @@ app.use('/signup', celebrate({
 
 app.use(router);
 
+app.use(errorLogger); // после роутов, но до ошибок
+
 app.use(errors());
 
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500
-        ? `На сервере произошла ошибка${err}`
-        : message,
+      message: statusCode === 500 ? `На сервере произошла ошибка${err}` : message,
     });
 });
 
