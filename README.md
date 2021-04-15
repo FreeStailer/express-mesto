@@ -4,7 +4,7 @@
 
 [Посмотреть макет на Реакте можно нажав на это предложение](https://freestailer.github.io/react-mesto-auth/)
 
-А так же выложен на хост [freestailer.ru](freestailer.ru)
+А так же выложен на хост [freestailer.ru](https://freestailer.ru)
 
 ## Содержание
 * Редактируемый профиль
