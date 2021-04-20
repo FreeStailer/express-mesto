@@ -20,25 +20,15 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'no-cors');
-  res.header('Access-Control-Allow-Headers', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-  if (req.method === 'OPTIONS') {
-    res.send(200);
-  }
-  next();
-});
-
 app.use(requestLogger);
+
+app.use(cors()); ////////////CORS/////////
 
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 }); 
-
-app.use(cors());
 
 app.use('/signin', celebrate({
   body: Joi.object().keys({
