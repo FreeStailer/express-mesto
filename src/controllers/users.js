@@ -63,13 +63,13 @@ const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
-  }, { new: true }, { runValidators: true }).orFail()
+  }, { new: true, runValidators: true }).orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(err, res));
 };
 
 const updateUserAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: true }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => handleUserError(err, res));
