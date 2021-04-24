@@ -48,7 +48,7 @@ const dislikeCard = (req, res) => {
     { new: true },
   ).orFail(new NotFoundError('Карточка не найдена'))
     .then(() => {
-      res.status(200).send({ message: 'Дизлайк!' });
+      res.status(200).send(card);
     })
     .catch((err) => handleCardError(err, res));
 };
