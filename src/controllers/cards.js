@@ -47,6 +47,7 @@ const deleteCard = (req, res, next) => {
             if (err.name === 'MongoError' || err.code === '11000') {
               throw new ConflictError('Конфликтная ошибка');
             }
+            throw (err);
           });
       } else {
         throw new ForbiddenError('Недостаточно прав');
