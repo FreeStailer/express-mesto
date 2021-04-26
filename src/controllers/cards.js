@@ -36,7 +36,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const owner = req.user._id;
-  Card.findById(req.params.cardId).orFail()
+  Card.findById(req.params.cardId).orFail(new NotFoundError('Card not found'))
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Card not found');
