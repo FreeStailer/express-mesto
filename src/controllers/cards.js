@@ -63,17 +63,14 @@ const likeCard = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  ).orFail(new NotFoundError('Карточка не найдена'))
-    .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Некорректные данные');
-      }
-      if (err.name === 'MongoError' || err.code === '11000') {
-        throw new ConflictError('Конфликтная ошибка');
-      }
-    })
-    .catch(next);
+  )
+  .then((card) => {
+    if (!card) {
+      throw new NotFoundError('Карточка не найдена')
+    }
+    res.status(200).send(card);
+  })
+  .catch(next);
 };
 
 const dislikeCard = (req, res, next) => {
@@ -81,18 +78,12 @@ const dislikeCard = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).orFail(new NotFoundError('Карточка не найдена'))
+  )
     .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена')
+      }
       res.status(200).send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Некорректные данные');
-      }
-      if (err.name === 'MongoError' || err.code === '11000') {
-        throw new ConflictError('Конфликтная ошибка');
-      }
-      throw err;
     })
     .catch(next);
 };
